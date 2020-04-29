@@ -9,7 +9,7 @@
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -88,7 +88,15 @@ const createWindow = async () => {
   // ------------------------------ Test ------------------------
   ipcMain.on('test', async () => {
     const counter = await spawn(new Worker("./workers/counter"))
-    counter().subscribe((newCount: any) => console.log(`===================== Counter incremented to:`, newCount))
+    counter().subscribe((newCount: any) => {
+      const options  = {
+        buttons: ["Yes","No","Cancel"],
+        message: 'Count: ' + newCount
+      };
+      dialog.showMessageBox(
+        options
+      )
+    });
   })
   // ------------------------------------------------------------
 
