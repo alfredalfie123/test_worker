@@ -12,8 +12,8 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { spawn, Worker } from 'threads';
 import MenuBuilder from './menu';
-import { spawn, Thread, Worker } from 'threads';
 
 export default class AppUpdater {
   constructor() {
@@ -75,7 +75,7 @@ const createWindow = async () => {
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
+      throw new Error('mainWindow is not defined');
     }
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
@@ -87,19 +87,17 @@ const createWindow = async () => {
 
   // ------------------------------ Test ------------------------
   ipcMain.on('test', async () => {
-    const counter = await spawn(new Worker("./workers/counter"))
-    counter().subscribe((newCount: any) => {
-      const options  = {
-        buttons: ["Yes","No","Cancel"],
-        message: 'Count: ' + newCount
+    const counter = await spawn(new Worker('./workers/counter'));
+    counter().subscribe(count => {
+      console.log('Count:', count);
+      const options = {
+        buttons: ['Yes', 'No', 'Cancel'],
+        message: `Count: ${count}`
       };
-      dialog.showMessageBox(
-        options
-      )
+      dialog.showMessageBox(options);
     });
-  })
+  });
   // ------------------------------------------------------------
-
 
   mainWindow.on('closed', () => {
     mainWindow = null;
