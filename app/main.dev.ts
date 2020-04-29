@@ -9,10 +9,11 @@
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
+import { spawn, Thread, Worker } from 'threads';
 
 export default class AppUpdater {
   constructor() {
@@ -83,6 +84,14 @@ const createWindow = async () => {
       mainWindow.focus();
     }
   });
+
+  // ------------------------------ Test ------------------------
+  ipcMain.on('test', async () => {
+    const counter = await spawn(new Worker("./workers/counter"))
+    counter().subscribe((newCount: any) => console.log(`===================== Counter incremented to:`, newCount))
+  })
+  // ------------------------------------------------------------
+
 
   mainWindow.on('closed', () => {
     mainWindow = null;
