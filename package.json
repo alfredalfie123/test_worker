@@ -60,17 +60,7 @@
       "app.html",
       "main.prod.js",
       "main.prod.js.map",
-      "package.json",
-      "app/workers/counter"
-    ],
-    "extraFiles": [
-      {
-        "from": "app/workers",
-        "to": "Resources/bin",
-        "filter": [
-          "**/*"
-        ]
-      }
+      "package.json"
     ],
     "dmg": {
       "contents": [

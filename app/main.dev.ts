@@ -12,10 +12,9 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { isMainThread, workerData, parentPort, Worker } from 'worker_threads';
-import openBrowser from './workers/startPuppeteer';
+import { Worker } from 'worker_threads';
 // import { spawn, Worker } from 'threads';
-import { workerPath } from './binaries';
+// import { workerPath } from './binaries';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {
@@ -63,11 +62,13 @@ const createWindow = async () => {
     width: 1024,
     height: 728,
     webPreferences:
+    // { nodeIntegration: true }
       process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true'
         ? {
             nodeIntegration: true
           }
         : {
+            nodeIntegration: true,
             preload: path.join(__dirname, 'dist/renderer.prod.js')
           }
   });
@@ -87,22 +88,12 @@ const createWindow = async () => {
       mainWindow.focus();
     }
   });
-  // ipcMain.on('abcdef', async () => {
-  //   openBrowser()
-  //     .then(() => console.log('Browser openned'))
-  //     .catch(err => console.log(err));
-  // }),
-  ipcMain.on('abcdef', async () => {
-    openBrowser()
-      .then(() => console.log('Browser openned'))
-      .catch(err => console.log(err));
-  });
 
   // ------------------------------ Test ------------------------
   ipcMain.on('test', async () => {
-    console.log(workerPath);
-    console.log('===============');
-    const worker = new Worker(workerPath, {
+    // console.log(workerPath);
+    // console.log('===============');
+    const worker = new Worker('./app/workers/counter.js', {
       workerData: { id: 1 }
     });
     worker.on('error', err => console.log(err));
