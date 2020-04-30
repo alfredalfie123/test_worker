@@ -12,7 +12,10 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { spawn, Worker } from 'threads';
+import { isMainThread, workerData, parentPort, Worker } from 'worker_threads';
+import openBrowser from './workers/startPuppeteer';
+// import { spawn, Worker } from 'threads';
+import { workerPath } from './binaries';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {
@@ -84,18 +87,72 @@ const createWindow = async () => {
       mainWindow.focus();
     }
   });
+  // ipcMain.on('abcdef', async () => {
+  //   openBrowser()
+  //     .then(() => console.log('Browser openned'))
+  //     .catch(err => console.log(err));
+  // }),
+  ipcMain.on('abcdef', async () => {
+    openBrowser()
+      .then(() => console.log('Browser openned'))
+      .catch(err => console.log(err));
+  });
 
   // ------------------------------ Test ------------------------
   ipcMain.on('test', async () => {
-    const counter = await spawn(new Worker('./workers/counter'));
-    counter().subscribe(count => {
-      console.log('Count:', count);
+    console.log(workerPath);
+    console.log('===============');
+    const worker = new Worker(workerPath, {
+      workerData: { id: 1 }
+    });
+    worker.on('error', err => console.log(err));
+    worker.on('exit', code => {
+      if (code !== 0) {
+        console.log(`Worker stopped with exit code ${code}`);
+      }
+    });
+    worker.on('message', msg => {
+      console.log(msg);
       const options = {
         buttons: ['Yes', 'No', 'Cancel'],
-        message: `Count: ${count}`
+        message: `Count: ${msg.count}`
       };
       dialog.showMessageBox(options);
+      worker.terminate();
     });
+    // if (isMainThread) {
+    //   const worker = new Worker('./workers/counter', { workerData: { id: 1 } });
+    //   worker.on('error', err => console.log(err));
+    //   worker.on('exit', code => {
+    //     if (code !== 0) {
+    //       console.log(`Worker stopped with exit code ${code}`);
+    //     }
+    //   });
+    //   worker.on('message', msg => {
+    //     console.log(msg);
+    //     const options = {
+    //       buttons: ['Yes', 'No', 'Cancel'],
+    //       message: `Count: ${msg.count}`
+    //     };
+    //     dialog.showMessageBox(options);
+    //   });
+    //   await worker.terminate();
+    // } else {
+    //   console.log(`Running thread ${workerData.id}`);
+    //   setTimeout(() => {
+    //     console.log(`Thread ${workerData.id} is done`);
+    //     parentPort?.postMessage({ count: 1 });
+    //   }, 1000);
+    // }
+    // const counter = await spawn(new Worker('./workers/counter'));
+    // counter().subscribe(count => {
+    //   console.log('Count:', count);
+    //   const options = {
+    //     buttons: ['Yes', 'No', 'Cancel'],
+    //     message: `Count: ${count}`
+    //   };
+    //   dialog.showMessageBox(options);
+    // });
   });
   // ------------------------------------------------------------
 

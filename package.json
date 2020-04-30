@@ -60,7 +60,17 @@
       "app.html",
       "main.prod.js",
       "main.prod.js.map",
-      "package.json"
+      "package.json",
+      "app/workers/counter"
+    ],
+    "extraFiles": [
+      {
+        "from": "app/workers",
+        "to": "Resources/bin",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
     "dmg": {
       "contents": [
@@ -292,7 +302,8 @@
     "redux-thunk": "^2.3.0",
     "source-map-support": "^0.5.16",
     "threads": "^1.4.1",
-    "tiny-worker": "^2.3.0"
+    "tiny-worker": "^2.3.0",
+    "ts-node": "^8.9.1"
   },
   "devEngines": {
     "node": ">=7.x",

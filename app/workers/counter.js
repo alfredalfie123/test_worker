@@ -1,14 +1,13 @@
-const { Observable } = require("observable-fns");
-const { expose } = require("threads/worker");
+const { parentPort } = require('worker_threads');
+const openBrowser = require('./startPuppeteer');
 
-function startCounting() {
-  return new Observable(observer => {
-    observer.next(1);
-    // for (let currentCount = 1; currentCount <= 10; currentCount++) {
-    //   observer.next(currentCount);
-    // }
-    observer.complete();
-  })
-}
-
-expose(startCounting);
+(async () => {
+  try {
+    await openBrowser();
+  } catch (err) {
+    console.log('Error');
+    console.log(err);
+  } finally {
+    parentPort.postMessage({ count: 1 });
+  }
+})();

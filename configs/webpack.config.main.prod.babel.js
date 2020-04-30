@@ -11,7 +11,7 @@ import baseConfig from './webpack.config.base';
 import CheckNodeEnv from '../internals/scripts/CheckNodeEnv';
 import DeleteSourceMaps from '../internals/scripts/DeleteSourceMaps';
 
-const ThreadsPlugin = require('threads-plugin');
+// const ThreadsPlugin = require('threads-plugin');
 
 CheckNodeEnv('production');
 DeleteSourceMaps();
@@ -43,7 +43,7 @@ export default merge.smart(baseConfig, {
   },
 
   plugins: [
-    new ThreadsPlugin(),
+    // new ThreadsPlugin(),
 
     new BundleAnalyzerPlugin({
       analyzerMode:
@@ -76,5 +76,9 @@ export default merge.smart(baseConfig, {
   node: {
     __dirname: false,
     __filename: false
+  },
+
+  externals: {
+    'ts-node': 'ts-node'
   }
 });
