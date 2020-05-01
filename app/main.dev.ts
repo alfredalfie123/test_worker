@@ -13,8 +13,6 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { Worker } from 'worker_threads';
-// import { spawn, Worker } from 'threads';
-// import { workerPath } from './binaries';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {

@@ -17,7 +17,7 @@ const puppeteer = require('puppeteer');
 
 async function openBrowser() {
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/google-chrome',
+    executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     headless: false
   });
 
